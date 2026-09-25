@@ -2,6 +2,7 @@
   "name": "malware-detection",
   "private": true,
   "scripts": {
+    "build": "node -e \"const fs=require('fs'); ['app.py','requirements.txt','templates','static'].forEach(p=>fs.accessSync(p)); console.log('Flask application build check passed');\"",
     "dev": "python app.py",
     "start": "python app.py",
     "test": "python tests_e2e.py"
