@@ -1,0 +1,46 @@
+{
+  "model_version": "synthetic-20260923",
+  "dataset": "synthetic demonstration dataset (12,000 samples, 18 static features)",
+  "disclaimer": "Accuracy measured on the bundled synthetic test split only; retrain on a labelled real-world dataset for production use.",
+  "holdout_accuracy": 0.9771,
+  "per_class": {
+    "SAFE": {
+      "precision": 0.984,
+      "recall": 0.9988,
+      "f1": 0.9913
+    },
+    "SUSPICIOUS": {
+      "precision": 0.9616,
+      "recall": 0.97,
+      "f1": 0.9658
+    },
+    "MALWARE": {
+      "precision": 0.9859,
+      "recall": 0.9625,
+      "f1": 0.9741
+    }
+  },
+  "confusion_matrix": [
+    [
+      799,
+      1,
+      0
+    ],
+    [
+      13,
+      776,
+      11
+    ],
+    [
+      0,
+      30,
+      770
+    ]
+  ],
+  "classes": [
+    "SAFE",
+    "SUSPICIOUS",
+    "MALWARE"
+  ],
+  "trained_at": "2026-09-23T16:48:32Z"
+}

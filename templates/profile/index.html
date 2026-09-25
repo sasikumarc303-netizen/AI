@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Profile · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">Profile &amp; Account Settings</h1>
+<p class="page-sub">Manage your account details</p>
+
+<div class="grid cols-2">
+  <div class="card">
+    <h2 class="section-title" style="margin-top:0">Account details</h2>
+    <dl class="kv" style="margin-bottom:10px">
+      <dt>Role</dt><dd>{{ user.role }}</dd>
+      <dt>Member since</dt><dd>{{ user.created_at.strftime('%Y-%m-%d') }}</dd>
+      <dt>Total scans</dt><dd>{{ scan_count }}</dd>
+    </dl>
+    <form method="post" action="{{ url_for('profile.update') }}" data-single-submit>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="name">Full name</label>
+      <input type="text" id="name" name="name" value="{{ user.name }}" required maxlength="120">
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" value="{{ user.email }}" required>
+      <button class="btn" type="submit">Save changes</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2 class="section-title" style="margin-top:0">Change password</h2>
+    <form method="post" action="{{ url_for('profile.password') }}" data-single-submit>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="current_password">Current password</label>
+      <div class="pw-wrap">
+        <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
+        <button type="button" class="pw-toggle" data-pw-toggle="current_password">Show</button>
+      </div>
+      <label for="new_password">New password (min 8 characters)</label>
+      <div class="pw-wrap">
+        <input type="password" id="new_password" name="new_password" required minlength="8" autocomplete="new-password">
+        <button type="button" class="pw-toggle" data-pw-toggle="new_password">Show</button>
+      </div>
+      <label for="confirm_password">Confirm new password</label>
+      <input type="password" id="confirm_password" name="confirm_password" required minlength="8" autocomplete="new-password">
+      <button class="btn" type="submit">Change password</button>
+    </form>
+    <p style="margin-top:18px"><a href="{{ url_for('auth.logout') }}">Sign out of this account</a></p>
+  </div>
+</div>
+{% endblock %}

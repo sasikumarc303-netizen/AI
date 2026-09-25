@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Scan history · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">Scan History</h1>
+<p class="page-sub">{{ pagination.total }} record{{ 's' if pagination.total != 1 }}</p>
+
+<form method="get" class="filters">
+  <div style="flex:1;min-width:200px"><label style="margin-top:0">Search file name</label>
+    <input type="text" id="history-search" name="q" value="{{ search }}" placeholder="Type to search…"></div>
+  <div><label style="margin-top:0">Result</label>
+    <select name="result"><option value="">All</option>
+      {% for r in results %}<option value="{{ r }}" {{ 'selected' if result == r }}>{{ r }}</option>{% endfor %}
+    </select></div>
+  <div><label style="margin-top:0">Risk</label>
+    <select name="risk"><option value="">All</option>
+      {% for r in risks %}<option value="{{ r }}" {{ 'selected' if risk == r }}>{{ r }}</option>{% endfor %}
+    </select></div>
+  <div><label style="margin-top:0">Sort</label>
+    <select name="sort">
+      {% for k, lbl in [('newest','Newest first'),('oldest','Oldest first'),('name','File name'),('size','Largest'),('risk','Risk')] %}
+      <option value="{{ k }}" {{ 'selected' if sort == k }}>{{ lbl }}</option>{% endfor %}
+    </select></div>
+  <button class="btn small" type="submit">Apply</button>
+  <a class="btn small secondary" href="{{ url_for('history.export_csv', q=search, result=result, risk=risk, sort=sort) }}">Export CSV</a>
+</form>
+
+<div class="card table-wrap">
+{% if pagination.items %}
+<table>
+  <thead><tr><th>File name</th><th>Type</th><th>Size</th><th>Date (UTC)</th><th>Result</th><th>Risk</th><th>Confidence</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for s in pagination.items %}
+  <tr>
+    <td><a href="{{ url_for('history.detail', scan_uuid=s.scan_uuid) }}">{{ s.file_name }}</a></td>
+    <td>{{ s.file_type }}</td>
+    <td>{{ '{:,}'.format(s.file_size) }} B</td>
+    <td>{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td><span class="pill {{ s.detection_result }}">{{ s.detection_result }}</span></td>
+    <td><span class="pill {{ s.risk_level }}">{{ s.risk_level }}</span></td>
+    <td>{{ '%.1f%%' | format(s.confidence * 100) if s.confidence is not none else '—' }}</td>
+    <td>{{ s.status }}</td>
+    <td>
+      <form method="post" action="{{ url_for('history.delete', scan_uuid=s.scan_uuid) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn small danger" type="submit" data-confirm="Delete this history entry? This cannot be undone.">Delete</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">No scan records match. <a href="{{ url_for('scanner.index') }}">Scan a file</a> to get started.</div>
+{% endif %}
+</div>
+
+{% if pagination.pages > 1 %}
+<div class="pagination">
+  {% for p in pagination.iter_pages() %}
+    {% if p %}<a class="{{ 'current' if p == pagination.page }}" href="{{ url_for('history.index', page=p, q=search, result=result, risk=risk, sort=sort) }}">{{ p }}</a>
+    {% else %}<span>…</span>{% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

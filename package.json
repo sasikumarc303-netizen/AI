@@ -1,0 +1,9 @@
+{
+  "name": "malware-detection",
+  "private": true,
+  "scripts": {
+    "dev": "python app.py",
+    "start": "python app.py",
+    "test": "python tests_e2e.py"
+  }
+}

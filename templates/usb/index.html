@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}USB protection · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">USB Device Protection</h1>
+<p class="page-sub">Scan mounted removable-media volumes for malware</p>
+
+<div class="note">
+  A web application can only scan <b>mounted filesystem paths</b> (e.g. <span class="mono">/media/…</span>).
+  This module scans those volumes in read-only mode: files are never executed, modified, or deleted.
+  If no devices are listed, connect a USB drive and ensure the operating system has mounted it.
+</div>
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+
+<div class="card">
+{% if devices %}
+  <form method="post" action="{{ url_for('usb.scan') }}" data-single-submit>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="device" style="margin-top:0">Detected volumes</label>
+    <select id="device" name="device">
+      {% for d in devices %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+    </select>
+    <button class="btn" type="submit">Scan device</button>
+  </form>
+  <div class="note warn" style="margin-top:16px">
+    Scanning is read-only and capped for safety. Disconnecting the device mid-scan is handled
+    gracefully — affected files are reported as errors, never as safe.
+  </div>
+{% else %}
+  <div class="empty">
+    No mounted removable-media volumes were detected.<br>
+    <small>Connect a USB device, mount it, then refresh this page.</small>
+  </div>
+{% endif %}
+</div>
+{% endblock %}

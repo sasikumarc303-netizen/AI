@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} · Malware Detection Using AI{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="card auth-card" style="text-align:center">
+    <h1 style="font-size:40px">{{ code }}</h1>
+    <p class="sub">{{ message }}</p>
+    {% if session.get('user_id') %}
+    <a class="btn" href="{{ url_for('main.dashboard') }}">Back to dashboard</a>
+    {% else %}
+    <a class="btn" href="{{ url_for('auth.login') }}">Sign in</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

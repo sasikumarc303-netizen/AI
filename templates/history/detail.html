@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Scan detail · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">Scan Record</h1>
+<p class="page-sub">Scan ID <span class="mono">{{ record.scan_uuid }}</span></p>
+<div class="card">
+  <dl class="kv">
+    <dt>File name</dt><dd>{{ record.file_name }}</dd>
+    <dt>File type</dt><dd>{{ record.file_type }}</dd>
+    <dt>File size</dt><dd>{{ '{:,}'.format(record.file_size) }} bytes</dd>
+    <dt>SHA-256</dt><dd class="mono">{{ record.sha256 or 'n/a' }}</dd>
+    <dt>Scan date (UTC)</dt><dd>{{ record.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+    <dt>Source</dt><dd>{{ record.source | upper }}</dd>
+    <dt>Detection result</dt><dd><span class="pill {{ record.detection_result }}">{{ record.detection_result }}</span></dd>
+    <dt>Risk level</dt><dd><span class="pill {{ record.risk_level }}">{{ record.risk_level }}</span></dd>
+    <dt>Confidence</dt><dd>{{ '%.2f%%' | format(record.confidence * 100) if record.confidence is not none else 'Not available' }}</dd>
+    <dt>Status</dt><dd>{{ record.status }}</dd>
+  </dl>
+  <h2 class="section-title">Details</h2>
+  {% for line in record.detail.splitlines() %}<p style="font-size:14px;margin-bottom:6px">{{ line }}</p>{% endfor %}
+  <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn small" href="{{ url_for('reports.scan_pdf', scan_uuid=record.scan_uuid) }}">Download PDF report</a>
+    <a class="btn small secondary" href="{{ url_for('history.index') }}">Back to history</a>
+  </div>
+</div>
+{% endblock %}

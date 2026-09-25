@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Reports · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">Security Reports</h1>
+<p class="page-sub">Generate a professional PDF report for any of your recent scans (up to 50 shown)</p>
+<div class="card table-wrap">
+{% if scans %}
+<table>
+  <thead><tr><th>File</th><th>Result</th><th>Risk</th><th>Date (UTC)</th><th></th></tr></thead>
+  <tbody>
+  {% for s in scans %}
+  <tr>
+    <td>{{ s.file_name }}</td>
+    <td><span class="pill {{ s.detection_result }}">{{ s.detection_result }}</span></td>
+    <td><span class="pill {{ s.risk_level }}">{{ s.risk_level }}</span></td>
+    <td>{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td><a class="btn small" href="{{ url_for('reports.scan_pdf', scan_uuid=s.scan_uuid) }}">Download PDF</a></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">No scans available for reporting yet.</div>
+{% endif %}
+</div>
+{% endblock %}

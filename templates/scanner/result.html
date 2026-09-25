@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Scan result · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">Scan Result</h1>
+<p class="page-sub">Scan ID <span class="mono">{{ record.scan_uuid }}</span></p>
+
+{% set colors = {'SAFE':'var(--safe)','SUSPICIOUS':'var(--suspicious)','MALWARE':'var(--malware)','UNKNOWN':'var(--unknown)','ERROR':'var(--unknown)'} %}
+<div class="result-banner card" style="border-color:{{ colors.get(record.detection_result, 'var(--card-border)') }}">
+  <div class="status" style="color:{{ colors.get(record.detection_result) }}">
+    {% if record.detection_result == 'MALWARE' %}MALWARE DETECTED
+    {% elif record.detection_result == 'SUSPICIOUS' %}SUSPICIOUS FILE
+    {% elif record.detection_result == 'SAFE' %}NO MALWARE DETECTED
+    {% elif record.detection_result == 'UNKNOWN' %}UNKNOWN — REQUIRES FURTHER ANALYSIS
+    {% else %}SCAN ERROR{% endif %}
+  </div>
+  <p style="color:var(--muted);margin-top:8px">{{ message }}</p>
+</div>
+
+<div class="grid cols-2">
+  <div class="card">
+    <h2 class="section-title" style="margin-top:0">File information</h2>
+    <dl class="kv">
+      <dt>File</dt><dd>{{ record.file_name }}</dd>
+      <dt>Type</dt><dd>{{ record.file_type }}</dd>
+      <dt>Size</dt><dd>{{ '{:,}'.format(record.file_size) }} bytes</dd>
+      <dt>SHA-256</dt><dd class="mono">{{ record.sha256 or 'n/a' }}</dd>
+      <dt>Scanned (UTC)</dt><dd>{{ record.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+      <dt>Source</dt><dd>{{ record.source | upper }}</dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h2 class="section-title" style="margin-top:0">Detection</h2>
+    <dl class="kv">
+      <dt>Result</dt><dd><span class="pill {{ record.detection_result }}">{{ record.detection_result }}</span></dd>
+      <dt>Risk level</dt><dd><span class="pill {{ record.risk_level }}">{{ record.risk_level }}</span></dd>
+      <dt>Confidence</dt><dd>{{ '%.2f%%' | format(record.confidence * 100) if record.confidence is not none else 'Not available' }}</dd>
+      <dt>Status</dt><dd>{{ record.status }}</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="card" style="margin-top:14px">
+  <h2 class="section-title" style="margin-top:0">Detection explanation</h2>
+  {% for line in record.detail.splitlines() %}<p style="font-size:14px;margin-bottom:6px">{{ line }}</p>{% endfor %}
+  <h2 class="section-title">Recommended action</h2>
+  <p style="font-size:14px">{{ recommendation }}</p>
+  <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn small" href="{{ url_for('reports.scan_pdf', scan_uuid=record.scan_uuid) }}">Download PDF report</a>
+    <a class="btn small secondary" href="{{ url_for('scanner.index') }}">Scan another file</a>
+    <a class="btn small secondary" href="{{ url_for('history.index') }}">View history</a>
+  </div>
+</div>
+{% endblock %}

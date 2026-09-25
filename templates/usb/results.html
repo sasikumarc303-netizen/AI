@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}USB scan results · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">USB Scan Results</h1>
+<p class="page-sub">Device <span class="mono">{{ report.device }}</span> — {{ report.scanned }} file{{ 's' if report.scanned != 1 }} scanned
+{% if report.capped %}(scan capped for safety){% endif %}</p>
+
+<div class="grid cols-5">
+  <div class="card stat-card"><div class="lbl">Safe</div><div class="num" style="color:var(--safe)">{{ report.counts.get('SAFE', 0) }}</div></div>
+  <div class="card stat-card"><div class="lbl">Suspicious</div><div class="num" style="color:var(--suspicious)">{{ report.counts.get('SUSPICIOUS', 0) }}</div></div>
+  <div class="card stat-card"><div class="lbl">Malware</div><div class="num" style="color:var(--malware)">{{ report.counts.get('MALWARE', 0) }}</div></div>
+  <div class="card stat-card"><div class="lbl">Unknown</div><div class="num" style="color:var(--unknown)">{{ report.counts.get('UNKNOWN', 0) }}</div></div>
+  <div class="card stat-card"><div class="lbl">Errors</div><div class="num" style="color:var(--unknown)">{{ report.counts.get('ERROR', 0) }}</div></div>
+</div>
+
+{% if report.counts.get('MALWARE') or report.counts.get('SUSPICIOUS') %}
+<div class="flash error" style="margin-top:16px">Threats were detected on this device. Alerts have been generated.
+  Do not open the flagged files; quarantine them according to your security policy. Nothing was deleted automatically.</div>
+{% endif %}
+
+{% if report.errors %}
+<div class="note warn" style="margin-top:16px">
+  Some files could not be scanned (device removed, permissions, or read errors):<br>
+  {% for e in report.errors[:10] %}<span class="mono">{{ e }}</span><br>{% endfor %}
+  {% if report.errors|length > 10 %}…and {{ report.errors|length - 10 }} more{% endif %}
+</div>
+{% endif %}
+
+<div class="card table-wrap" style="margin-top:16px">
+{% if report.results %}
+<table>
+  <thead><tr><th>File</th><th>Result</th><th>Risk</th><th>Confidence</th><th></th></tr></thead>
+  <tbody>
+  {% for r in report.results %}
+  <tr>
+    <td class="mono">{{ r.name }}</td>
+    <td><span class="pill {{ r.result }}">{{ r.result }}</span></td>
+    <td><span class="pill {{ r.risk }}">{{ r.risk }}</span></td>
+    <td>{{ '%.1f%%' | format(r.confidence * 100) if r.confidence is not none else '—' }}</td>
+    <td><a href="{{ url_for('history.detail', scan_uuid=r.scan_uuid) }}">Details</a></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">No files were found on this device.</div>
+{% endif %}
+</div>
+<a class="btn small secondary" style="margin-top:16px" href="{{ url_for('usb.index') }}">Back to USB protection</a>
+{% endblock %}

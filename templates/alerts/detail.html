@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Alert detail · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">Alert Detail</h1>
+<p class="page-sub">Alert ID <span class="mono">{{ alert.alert_uuid }}</span></p>
+<div class="card">
+  <dl class="kv">
+    <dt>File</dt><dd>{{ alert.file_name }}</dd>
+    <dt>Detection type</dt><dd><span class="pill {{ alert.detection_type }}">{{ alert.detection_type }}</span></dd>
+    <dt>Risk level</dt><dd><span class="pill {{ alert.level }}">{{ alert.level }}</span></dd>
+    <dt>Timestamp (UTC)</dt><dd>{{ alert.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+    <dt>Status</dt><dd>{{ 'Unread' if not alert.is_read else 'Read' }}{{ ' · Dismissed' if alert.is_dismissed }}</dd>
+    <dt>Message</dt><dd>{{ alert.message }}</dd>
+    <dt>Recommended action</dt><dd>{{ alert.recommended_action }}</dd>
+  </dl>
+  <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+    {% if alert.scan %}<a class="btn small" href="{{ url_for('history.detail', scan_uuid=alert.scan.scan_uuid) }}">View scan record</a>{% endif %}
+    <a class="btn small secondary" href="{{ url_for('alerts.index') }}">Back to alerts</a>
+  </div>
+</div>
+{% endblock %}

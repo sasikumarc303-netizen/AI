@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Scan a file · Malware Detection Using AI{% endblock %}
+{% block content %}
+<h1 class="page-title">File Malware Analysis</h1>
+<p class="page-sub">Upload a file for static AI analysis. Files are never executed and are deleted after scanning.</p>
+
+<div class="card">
+  <form id="upload-form" method="post" action="{{ url_for('scanner.upload') }}"
+        enctype="multipart/form-data" data-single-submit>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="dropzone" id="dropzone" data-max-bytes="{{ max_mb * 1048576 }}">
+      <input type="file" id="file-input" name="file" required>
+      <p id="drop-label">Drag &amp; drop a file here, or click to browse<br>
+        <small>Maximum size: {{ max_mb }} MB</small></p>
+    </div>
+    <div class="progress" id="scan-progress"><div class="bar"></div></div>
+    <button class="btn" type="submit">Scan file</button>
+  </form>
+</div>
+
+<div class="note" style="margin-top:18px">
+  Static analysis only: the engine reads file bytes to compute features (entropy, structure,
+  indicators). Uploaded content is never opened, executed, or interpreted as code.
+</div>
+
+{% if recent %}
+<h2 class="section-title">Your last scans</h2>
+<div class="card table-wrap">
+<table>
+  <thead><tr><th>File</th><th>Result</th><th>Risk</th><th>Time (UTC)</th></tr></thead>
+  <tbody>
+  {% for s in recent %}
+  <tr>
+    <td><a href="{{ url_for('scanner.result', scan_uuid=s.scan_uuid) }}">{{ s.file_name }}</a></td>
+    <td><span class="pill {{ s.detection_result }}">{{ s.detection_result }}</span></td>
+    <td><span class="pill {{ s.risk_level }}">{{ s.risk_level }}</span></td>
+    <td>{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}

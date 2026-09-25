@@ -1,0 +1,37 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data
+instance/*
+!instance/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploaded files and generated reports
+uploads/
+*.pdf
+
+# Logs and local tooling
+*.log
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node dependencies and build output
+node_modules/
+dist/
+build/
